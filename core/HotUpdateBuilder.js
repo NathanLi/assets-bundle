@@ -17,7 +17,7 @@ module.exports = {
     /**
      * 编译子包清单
      * @param {string} targetDir 
-     * @param {Package} packInfo 
+     * @param {ccab.Package} packInfo 
      * @param {boolean} isDebug 
      */
     async build(targetDir, packInfo, isDebug) {
@@ -66,7 +66,7 @@ module.exports = {
     /**
      * 为目录生成热更对象(仅支持 构建目录【${project}/build/jsb-default 或者 ${project}/HotUpdate/xxxx】)
      * @param {string} srcDir 目录
-     * @param {Manifest} outObj 热更对象
+     * @param {ccab.Manifest} outObj 热更对象
      * @returns Mainfest 对象
      */
     buildManifest(srcDir, manifest) {
@@ -87,7 +87,7 @@ module.exports = {
     /**
      * 
      * @param {string} dir 
-     * @param {ManifestAssets} assets
+     * @param {ccab.ManifestAssets} assets
      * @returns {string[]} 所有文件的完整路径
      * @private
      */
@@ -130,10 +130,10 @@ module.exports = {
 
     /**
      * 生成 Manifest 对象
-     * @param {Package} packInfo
+     * @param {ccab.Package} packInfo
      * @param {boolean} isDebug 是否调试
-     * @param {Manifest} manifest 可能已经存在的 Manifest 对象
-     * @returns {Manifest} Manifest 对象
+     * @param {ccab.Manifest} manifest 可能已经存在的 Manifest 对象
+     * @returns {ccab.Manifest} Manifest 对象
      */
     generateManifest(packInfo, isDebug = false, manifest) {
         manifest = manifest || Object.create(null);
@@ -161,9 +161,9 @@ module.exports = {
     },
     /**
      * 生成基础的 Manifest 对象(version="0.0.1")
-     * @param {Package} packInfo
+     * @param {ccab.Package} packInfo
      * @param {boolean} isDebug 是否调试
-     * @returns {Manifest} Manifest 对象
+     * @returns {ccab.Manifest} Manifest 对象
      */
     generateEmptyManifest(packInfo, isDebug = false) {
         let newPack = JSON.parse(JSON.stringify(packInfo));
@@ -176,7 +176,7 @@ module.exports = {
     /**
      * 写入清单文件
      * @param {string} destDir 
-     * @param {Manifest} manifest 
+     * @param {ccab.Manifest} manifest 
      */
     writeManifest(destDir, manifest) {
         // 写入 project.manifest

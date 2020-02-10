@@ -32,6 +32,11 @@ Editor.Panel.extend({
     style: fs.readFileSync(Editor.url('packages://assets-bundle/panel/index.css', 'utf8')) + "",
     template: fs.readFileSync(Editor.url('packages://assets-bundle/panel/index.html', 'utf8')) + "",
 
+    close() {
+        Editor.log('panel close');
+        return true;
+    },
+
 
     // method executed when template and styles are successfully loaded and initialized
     ready() {
@@ -68,7 +73,7 @@ Editor.Panel.extend({
                 },
                 /**
                  * 子包数组
-                 * @type Package[]
+                 * @type ccab.Package[]
                  * */
                 subpackArr: [],
                 isDebug: false,
@@ -96,6 +101,7 @@ Editor.Panel.extend({
 
                 /**
                  * 根据配置在项目中设置子包
+                 * @param {ccab.Package} pack
                  */
                 async setSubpack(pack) {
                     // pack = this.subpackArr[0];
@@ -108,7 +114,8 @@ Editor.Panel.extend({
                             _logstr += dirs[i] + ", ";
                             let data = await AssetDB.getMetaInfoByUrl(dirs[i]);
                             if (data && data.json) {
-                                let meta = JSON.parse(data.json);
+                                /** @type {Editor.MetaFolder} */
+                                const meta = JSON.parse(data.json);
                                 // 仅设置未设置的目录
                                 if (meta.isSubpackage == false || meta.subpackageName != packName) {
                                     meta.isSubpackage = true;
@@ -266,7 +273,7 @@ Editor.Panel.extend({
         },
         'onBuildFinished'(event, strData) {
             this.vue.onBuildFinished();
-            plugConfig = {
+            const plugConfig = {
                 mainPack: this.vue.mainPack,
                 subpackArr: this.vue.subpackArr,
                 packageSaveDir: this.vue.packageSaveDir,

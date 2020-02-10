@@ -27,7 +27,7 @@ module.exports = {
 
     /**
      * 读取配置文件
-     * @returns {PlugConfig}
+     * @returns {ccab.PlugConfig}
      */
     read() {
         let file = this.configFile;
@@ -41,7 +41,7 @@ module.exports = {
     },
     /**
      * 
-     * @param {PlugConfig} config
+     * @param {ccab.PlugConfig} config
      */
     write(config) {
         let file = this.configFile;

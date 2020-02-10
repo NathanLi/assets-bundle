@@ -9,6 +9,12 @@
       "message": "assets-bundle:open"
     }
   },
+  "scripts": {
+      "test": "jest"
+  },
+  "reload": {
+    "ignore": ["*"]
+  },
   "panel": {
     "main": "panel/index.js",
     "type": "dockable",
@@ -19,13 +25,16 @@
     "height": 500
   },
   "dependencies": {
-    "@types/jszip": "^3.1.7",
-    "@types/node": "^13.1.6",
     "crypto": "^1.0.1",
+    "electron": "^7.1.11",
     "fs": "0.0.1-security",
     "fs-extra": "^8.1.0",
     "jszip": "^3.2.2",
     "path": "^0.12.7",
     "zip-local": "^0.3.4"
+  },
+  "devDependencies": {
+    "@types/jszip": "^3.1.7",
+    "@types/node": "^13.5.3"
   }
 }

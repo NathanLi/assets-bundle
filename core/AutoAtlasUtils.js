@@ -1,28 +1,29 @@
 var path = require("path");
 var Config = require("../Config");
 var AssetsDB = require("./AssetsDB");
+const SubPackageHelper = require('./SubPackageHelper');
+const AutoAtlasHelper = require('./AutoAtlas/helper');
 
 module.exports = {
     /**
      * 仅获取项目子包的自动图集信息
+     * @param {Editor.Options} buildOptions
      * @returns {AutoAtlasInfo}
      */
     getSubPackageAutoAtlas(buildOptions) {
-        let buildResults = buildOptions.buildResults;
-        let autoAtlas = Object.create(null);
+        const buildResults = buildOptions.buildResults;
+        const autoAtlas = Object.create(null);
+        const subpackagesRoot = path.join(buildOptions.dest, Config.SUBPACKAGES, "/");
 
-        let uuids = buildResults.getAssetUuids();
+        const uuids = buildResults.getAssetUuids();
         for (let i = 0; i < uuids.length; i++) {
-            let uuid = uuids[i];
-            var url = Editor.assetdb.uuidToFspath(uuid);   // 获取不到资源路径的为 自动图集 (也可能是资源丢失)
-            let subpackagesRoot = path.join(buildOptions.dest, Config.SUBPACKAGES, "/");
-            let nativeUrl = buildResults.getNativeAssetPath(uuid);
-            // 用 nativeUrl 排除资源丢失的情况
-            if (!url && nativeUrl && nativeUrl.indexOf(subpackagesRoot) == 0) {
-                let subPackName = this._getSubPackageName(nativeUrl, subpackagesRoot);
+            const uuid = uuids[i];
+            const nativePath = AutoAtlasHelper.loadNativePath(uuid, buildResults, subpackagesRoot);
+            if (nativePath) {
+                const subPackName = SubPackageHelper.getSubPackageName(nativePath, subpackagesRoot);
                 // TODO: 当项目资源较大并且自动图集较多时 可能存在性能问题
                 // FIXME: 此处可以采取 读取 ${Project}/temp/TexturePacker/build/raw-assets/ 目录下的自动图集信息
-                var depends = this._getAutoAtlasUuids(uuid, buildResults);    // 精灵帧集合
+                const depends = this._getAutoAtlasUuids(uuid, buildResults);    // 精灵帧集合
 
                 if (autoAtlas[subPackName] == undefined) {
                     autoAtlas[subPackName] = {
@@ -70,12 +71,4 @@ module.exports = {
         // return Object.keys(uuids);
         return uuidsMap;
     },
-
-    _getSubPackageName(nativeUrl, root) {
-        let name = "";
-        name = nativeUrl.replace(root, "");
-        name = name.split("/")[0]
-        return name;
-    },
-
 }

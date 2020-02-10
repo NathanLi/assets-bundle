@@ -16,6 +16,11 @@ module.exports = {
         }
         return Editor.remote.assetdb;
     },
+
+    /**
+     * 是否是 uuid
+     * @param {string} uuid 
+     */
     _isUuid(uuid) {
         return isUuid.test(uuid);
     },
@@ -23,9 +28,8 @@ module.exports = {
         return url.indexOf("db://") == 0;
     },
     /**
-     * 相对路径转 url (仅做转换未校验url是否存在)
-     * @param {string}} rPath 
-     * @returns {string}
+     * 相对路径转 url (仅做转换为校验url是否存在)
+     * @param {string} rPath 
      */
     getUrlByRelativepath(rPath) {
         if (this._isUrl(rPath)) return rPath;
@@ -120,8 +124,8 @@ module.exports = {
     /**
      * 资源查询
      * @param pattern url的匹配模式
-     * @param { AssetType | AssetType[] } type
-     * @returns {Promise<Asset[]>}
+     * @param { ccab.AssetType | ccab.AssetType[] } type
+     * @returns {Promise<ccab.Asset[]>}
      */
     async getAssets(pattern, type = "", extType = undefined) {
         return new Promise((resolve) => {
@@ -238,8 +242,8 @@ module.exports = {
 
     /**
      * 获取当前目录所有uuid包括依赖的uuid(包括自己)
-     * @param {"db://assets/xxx"} url 
-     * @param {AssetType} type
+     * @param {string} pattern 如："db://assets/xxx"
+     * @param {ccab.AssetType} type
      * @returns {Promise<{[uuid:string]: boolean}>}
      */
     async getDependsRecursively(pattern, type = "", findedMap = null, extType = []) {
@@ -260,7 +264,7 @@ module.exports = {
                         continue;
                     }
                     findedMap[uuid] = true;
-                    await this.getDepends(url, "", uuidMap, extType);    // 不断注重新的 uuid 到 uuidMap
+                    await this.getDepends(url, "", uuidMap, extType);    // 不断注重新的 uuid 到 uuidMap;
                 }
             }
         }
@@ -268,8 +272,8 @@ module.exports = {
     },
     /**
      * 获取依赖关系uuids
-     * @param pattern url的匹配模式
-     * @param { AssetType | AssetType[] } type
+     * @param {string} pattern url的匹配模式
+     * @param { ccab.AssetType | ccab.AssetType[] } type
      * @returns {Promise<{[uuid:string]: boolean}>}
      */
     async getDepends(pattern, type = "", uuidMap, extType = []) {

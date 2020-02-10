@@ -8,20 +8,20 @@ var HotUpdateBuilder = require("./HotUpdateBuilder");
 var Config = require("../Config");
 
 
-module.exports = {
-    /**@type Subpackages*/
-    subpackages: null,
+module.exports = { 
+    /** @type Editor.ISubpackage */
+    subpackages,
     buildRoot: "",
-    /**@type {PlugConfig} */
-    plugConfig: null,
+    /** @type ccab.PlugConfig */
+    plugConfig,
 
     subpackagesPath: "",
 
     /**
      * 
-     * @param {PlugConfig} plugConfig 插件配置信息
+     * @param {ccab.PlugConfig} plugConfig 插件配置信息
      * @param {string} buildDest 编译目录
-     * @param {Subpackages} subpackages 引擎构建后生成的子包对象
+     * @param {{[name: string]: Editor.ISubpackage}} subpackages 引擎构建后生成的子包对象
      */
     init(plugConfig, buildDest, subpackages) {
         this.plugConfig = plugConfig;
@@ -97,7 +97,7 @@ module.exports = {
 
     /**
      * 检验子包资源私有性 (无法校验脚本的相互引用关系)
-     * @param {Package[]} subpackArr
+     * @param {ccab.Package[]} subpackArr
      */
     async checkPrivate(subpackArr = []) {
 
