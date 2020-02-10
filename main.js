@@ -5,28 +5,9 @@ var fs = require("fs");
 var IPC = require('./core/IPC');
 var AssetsBundle = require("./core/AssetsBundle");
 var AutoAtlasUtils = require("./core/AutoAtlasUtils");
-// 重新编译 main.js 追加设置搜索路径逻辑
-function reBuildMainJs(buildOptions) {
-    let buildDestPath = buildOptions.dest;
-    var root = path.normalize(buildDestPath);
-    var url = path.join(root, "main.js");
-    let data = fs.readFileSync(url, "utf8");
-    if (data && typeof data === "string") {
-        var newStr =
-            "\n" +
-            "if (window.jsb) { \n" +
-            "    var hotUpdateSearchPaths = localStorage.getItem('HotUpdateSearchPaths'); \n" +
-            "    if (hotUpdateSearchPaths) { \n" +
-            "        jsb.fileUtils.setSearchPaths(JSON.parse(hotUpdateSearchPaths)); \n" +
-            "    }\n" +
-            "}\n";
-        var newData = newStr + data;
-        fs.writeFileSync(url, newData, "utf8");
 
-        Editor.log("[assets-bundle]:: 'HotUpdateSearchPaths' updated in built " + url);
-    }
-}
-
+const PackageJson = require('./package.json');
+const PackageName = PackageJson.name;
 
 module.exports = {
     load() {
@@ -41,10 +22,14 @@ module.exports = {
     },
 
 
-    /**编译开始 */
-    async onBuildStart(options, callback) {
-        if (!Editor.Panel.findWindow("assets-bundle")) {
-            callback();
+    /**
+     * 编译开始 
+     * @param {Editor.Options} options 
+     * @param {()=>void} next 
+     */
+    async onBuildStart(options, next) {
+        if (!Editor.Panel.findWindow(PackageName)) {
+            next();
             return;
         }
         // 动态设置子包 并获取子包配置信息
@@ -55,12 +40,17 @@ module.exports = {
             Editor.error(error);
         }
 
-        callback();
+        next();
     },
 
-    async onBuildFinished(options, callback) {
-        if (!Editor.Panel.findWindow("assets-bundle")) {
-            callback();
+    /**
+     * 
+     * @param {Editor.Options} options 
+     * @param {()=>void} next 
+     */
+    async onBuildFinished(options, next) {
+        if (!Editor.Panel.findWindow(PackageName)) {
+            next();
             return;
         }
         var buildResults = options.buildResults;
@@ -78,7 +68,7 @@ module.exports = {
             let _subpackages = buildResults._subpackages;
             let [error, strData] = await IPC.sendToPanel("onBuildFinished");
             if (!error) {
-                /**@type {PlugConfig} */
+                /**@type {ccab.PlugConfig} */
                 let plugConfig = JSON.parse(strData);
                 AssetsBundle.init(plugConfig, buildDest, _subpackages);
 
@@ -89,15 +79,13 @@ module.exports = {
                     await AssetsBundle.run(autoAtlasInfo);
                 }
             }
-
-            reBuildMainJs(options);
-
         } catch (error) {
             Editor.error(error);
         }
 
         Editor.success(":::::: 打包资源结束 ::::::");
-        callback();
+
+        next();
     },
 
     // register your ipc messages here
@@ -105,6 +93,9 @@ module.exports = {
         'open'() {
             // open entry panel registered in package.json
             Editor.Panel.open('assets-bundle');
-        }
+        },
+        'scene:saved'() {
+            Editor.log('scene:saved');
+        },
     },
 };
