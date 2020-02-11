@@ -6,8 +6,41 @@ var IPC = require('./core/IPC');
 var AssetsBundle = require("./core/AssetsBundle");
 var AutoAtlasUtils = require("./core/AutoAtlasUtils");
 
+const Config = require('./Config');
+
 const PackageJson = require('./package.json');
 const PackageName = PackageJson.name;
+
+/**
+ * 读取用户设置
+ * @returns {ccab.PlugConfig}
+ */
+async function loadUserConfig() {
+    if (isOpenedPanel()) {
+        const [error, strData] = await IPC.sendToPanel("onBuildFinished");
+
+        if (error) {
+            Editor.error(error);
+            return;
+        }
+
+        const config = JSON.parse(strData);
+        return config;
+    }
+
+    const config = Config.read();
+    return config;
+}
+
+/**
+ * 是否打开了面板
+ * @returns {boolean}
+ */
+function isOpenedPanel() {
+    const opened = Editor.Panel.findWindow(PackageName);
+    return opened;
+}
+
 
 module.exports = {
     load() {
@@ -28,7 +61,7 @@ module.exports = {
      * @param {()=>void} next 
      */
     async onBuildStart(options, next) {
-        if (!Editor.Panel.findWindow(PackageName)) {
+        if (!isOpenedPanel()) {
             next();
             return;
         }
@@ -49,10 +82,14 @@ module.exports = {
      * @param {()=>void} next 
      */
     async onBuildFinished(options, next) {
-        if (!Editor.Panel.findWindow(PackageName)) {
+        const config = await loadUserConfig();
+        const isEnable = config && config.isEnable;
+
+        if (!isEnable) {
             next();
             return;
         }
+
         var buildResults = options.buildResults;
 
         Editor.success(":::::: 开始打包资源 ::::::");
@@ -66,18 +103,14 @@ module.exports = {
             let buildDest = options.dest;
             let platform = options.platform; // 'android',
             let _subpackages = buildResults._subpackages;
-            let [error, strData] = await IPC.sendToPanel("onBuildFinished");
-            if (!error) {
-                /**@type {ccab.PlugConfig} */
-                let plugConfig = JSON.parse(strData);
-                AssetsBundle.init(plugConfig, buildDest, _subpackages);
 
-                Editor.log("开始校验资源安全性和私有性");
-                console.log("开始校验资源安全性和私有性");
-                if (await AssetsBundle.check()) {
-                    Editor.log("开始打包");
-                    await AssetsBundle.run(autoAtlasInfo);
-                }
+            AssetsBundle.init(config, buildDest, _subpackages);
+
+            Editor.log("开始校验资源安全性和私有性");
+            console.log("开始校验资源安全性和私有性");
+            if (await AssetsBundle.check()) {
+                Editor.log("开始打包");
+                await AssetsBundle.run(autoAtlasInfo);
             }
         } catch (error) {
             Editor.error(error);
@@ -94,8 +127,25 @@ module.exports = {
             // open entry panel registered in package.json
             Editor.Panel.open('assets-bundle');
         },
+
         'scene:saved'() {
-            Editor.log('scene:saved');
+            if (!isOpenedPanel()) {
+                return;
+            }
+
+            IPC.sendToPanel('curUserConfig')
+                .then(value => {
+                    const [err, str] = value;
+
+                    if (err) {
+                        throw err;
+                    }
+
+                    Config.write(JSON.parse(str));
+                })
+                .then(() => Editor.log('AssetsBundle saved!'))
+                .catch(err => Editor.error('AssetsBundle save error: ', err));
+
         },
     },
 };

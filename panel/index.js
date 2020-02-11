@@ -34,6 +34,7 @@ Editor.Panel.extend({
 
     close() {
         Editor.log('panel close');
+        this.vue.saveConfig();
         return true;
     },
 
@@ -52,7 +53,8 @@ Editor.Panel.extend({
                     this.mainPack = config.mainPack;
                     this.subpackArr = config.subpackArr;
                     this.packageSaveDir = config.packageSaveDir;
-                    this.isDebug = this.isDebug;
+                    this.isDebug = config.isDebug;
+                    this.isEnable = config.isEnable;
                 }
 
             },
@@ -77,7 +79,7 @@ Editor.Panel.extend({
                  * */
                 subpackArr: [],
                 isDebug: false,
-
+                isEnable: false,
                 searchStr: "",
             },
 
@@ -250,7 +252,8 @@ Editor.Panel.extend({
                         isDebug: this.isDebug,
                         mainPack: this.mainPack,
                         subpackArr: this.subpackArr,
-                    }
+                        isEnable: this.isEnable
+                    };
                     Config.write(data);
                 }
 
@@ -278,11 +281,29 @@ Editor.Panel.extend({
                 subpackArr: this.vue.subpackArr,
                 packageSaveDir: this.vue.packageSaveDir,
                 isDebug: this.vue.isDebug,
-            }
+                isEnable: this.vue.isEnable,
+            };
             if (event.reply) {
                 // 返回子包配置信息
                 event.reply(null, JSON.stringify(plugConfig));
             }
-        }
+        },
+
+        /** 获取当前用户的配置 */
+        curUserConfig(event) {
+            const config = {
+                mainPack: this.vue.mainPack,
+                subpackArr: this.vue.subpackArr,
+                packageSaveDir: this.vue.packageSaveDir,
+                isDebug: this.vue.isDebug,
+                isEnable: this.vue.isEnable,
+            };
+
+            if (event.reply) {
+                // 返回子包配置信息
+                event.reply(null, JSON.stringify(config));
+            }
+        },
+
     }
 });

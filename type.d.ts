@@ -21,6 +21,8 @@ declare namespace ccab {
         packageSaveDir: string,
         /** 是否是调试模式 */
         isDebug: boolean,
+        /** 是否启用本扩展 */
+        isEnable: boolean,
     }
 
     export interface Package {

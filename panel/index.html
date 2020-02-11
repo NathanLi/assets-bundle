@@ -34,6 +34,9 @@
             <ui-prop name="是否调试" tooltip="如果是调试 子包将保存在 'Debug/' 目录中,相对应的也会在在热更地址后加一个 'Debug/' ">
                 <ui-checkbox v-value="isDebug">是否是调试热更包</ui-checkbox>
             </ui-prop>
+            <ui-prop name="是否启用" tooltip="因为会影响到打包后的结果，所以需要你确认是否启用本功能">
+                <ui-checkbox v-value="isEnable">是否启用本扩展功能</ui-checkbox>
+            </ui-prop>
         </div>
     </ui-section>
     <!-- 搜索 -->

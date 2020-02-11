@@ -27,6 +27,7 @@
     subpackArr: Package[],
     packageSaveDir: string,
     isDebug: boolean,
+    isEnable: boolean,
 }} PlugConfig  插件配置信息
 
 
