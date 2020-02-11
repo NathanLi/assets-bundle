@@ -10,10 +10,10 @@ var Config = require("../Config");
 
 module.exports = { 
     /** @type Editor.ISubpackage */
-    subpackages,
+    subpackages: null,
     buildRoot: "",
     /** @type ccab.PlugConfig */
-    plugConfig,
+    plugConfig: null,
 
     subpackagesPath: "",
 

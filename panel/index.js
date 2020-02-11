@@ -65,7 +65,7 @@ Editor.Panel.extend({
                     zhName: "主包",
                     version: "1.0.0",
                     packageUrl: "http://127.0.0.1/GameX",
-                    zipImport: true,
+                    zipImport: false,
                     zipRawassets: false,
                     isPrivate: false,
                     type: "HOT_UPDATE",

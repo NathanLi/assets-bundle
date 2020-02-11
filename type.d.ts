@@ -13,9 +13,13 @@ declare namespace ccab {
     }
 
     export interface PlugConfig {
+        /** 主包信息 */
         mainPack: Package,
+        /** 子包信息 */
         subpackArr: Package[],
+        /** 打出的包路径 */
         packageSaveDir: string,
+        /** 是否是调试模式 */
         isDebug: boolean,
     }
 
