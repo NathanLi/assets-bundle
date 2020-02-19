@@ -1,7 +1,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var Electron = require('electron');
+const ChildProcess = require('child_process');
 
 module.exports = {
     /**
@@ -36,8 +36,14 @@ module.exports = {
             Editor.log("目录不存在：" + dir);
             return;
         }
-        Electron.shell.showItemInFolder(dir);
-        Electron.shell.beep();
+
+        if (process.platform === 'darwin') {
+            ChildProcess.exec(`open "" "${dir}"`);
+        } else if (process.platform === 'win32') {
+            ChildProcess.exec(`start "" "${dir}"`);
+        } else {
+            Editor.error('不支持的平台，无法打开目录：', dir);
+        }
     },
     /**
      * 选择一个目录

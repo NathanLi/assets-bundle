@@ -10,10 +10,12 @@
     }
   },
   "scripts": {
-      "test": "jest"
+    "test": "jest"
   },
   "reload": {
-    "ignore": ["*"]
+    "ignore": [
+      "*"
+    ]
   },
   "panel": {
     "main": "panel/index.js",
@@ -26,7 +28,6 @@
   },
   "dependencies": {
     "crypto": "^1.0.1",
-    "electron": "^7.1.11",
     "fs": "0.0.1-security",
     "fs-extra": "^8.1.0",
     "jszip": "^3.2.2",
